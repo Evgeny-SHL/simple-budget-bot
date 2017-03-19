@@ -87,3 +87,19 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# Secret bot token
+bot_token.py
+
+# IDEA
+.idea
+
+# Heroku
+Include
+Lib
+Scripts
+tcl
+pip-selfcheck.json
+requirements.txt
+__init__.py
+Procfile.windows
