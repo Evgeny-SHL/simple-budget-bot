@@ -93,12 +93,3 @@ bot_token.py
 
 # IDEA
 .idea
-
-# Heroku
-Include
-Lib
-Scripts
-tcl
-pip-selfcheck.json
-__init__.py
-Procfile.windows
