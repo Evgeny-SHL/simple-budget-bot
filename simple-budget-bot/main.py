@@ -1,6 +1,6 @@
 import telebot  # Основаня библиотека для работы с Bot API
 
-import bot_token  # Файл с объявление токена спрятан с помощью .gitignore
+import bot_token  # Файл с объявлением токена спрятан с помощью .gitignore
 import quotes  # Все фразы бота
 
 # from datetime import datetime
