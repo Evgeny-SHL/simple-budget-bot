@@ -23,7 +23,7 @@ def handle_text(message):
     try:
         arguments = parsing.find_arguments(message.text, last_is_string=True)
         cost = str(int(arguments[0]))
-        date = str(datetime.strptime(arguments[1], '%d.%m.%y'))
+        date = str(datetime.strptime(arguments[1], '%y-%m-%d'))
         description = arguments[2]
         database.add(message.chat.id, cost, date, description)
         bot.send_message(message.chat.id, quotes.add_ok)
@@ -80,6 +80,19 @@ def handle_text(message):
     try:
         bot.send_message(message.chat.id,
                          database.find_total_outcome(message.chat.id))
+    except BaseException:
+        bot.send_message(message.chat.id, quotes.unexpected_error)
+
+
+@bot.message_handler(commands=['clear'])
+def handle_text(message):
+    try:
+        arguments = parsing.find_arguments(message.text)
+        date = str(datetime.strptime(arguments[0], '%y-%m-%d'))
+        database.clear_before_date(message.chat.id, date)
+        bot.send_message(message.chat.id, quotes.clear_ok)
+    except exceptions.WrongNumberOfArgumentsException as exception:
+        bot.send_message(message.chat.id, exception.value)
     except BaseException:
         bot.send_message(message.chat.id, quotes.unexpected_error)
 

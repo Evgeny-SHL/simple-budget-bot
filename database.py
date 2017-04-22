@@ -117,6 +117,29 @@ def find_records(chat_id):
     return all_records
 
 
+def clear_before_date(chat_id, date):
+    chat_id = str(chat_id)
+    semaphore.acquire()
+
+    if not contains(chat_id):
+        semaphore.release()
+        return
+    with open(db_path) as db:
+        database = json.load(db)
+
+    new_records = {}
+    for record_id in database[chat_id]['records']:
+        record = database[chat_id]['records'][record_id]
+        if record[1] >= date:
+            new_records[record_id] = record
+    database[chat_id]['records'] = new_records
+
+    with open(db_path, 'w') as db:
+        json.dump(database, db)
+
+    semaphore.release()
+
+
 def find_total_outcome(chat_id):
     chat_id = str(chat_id)
     semaphore.acquire()
