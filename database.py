@@ -1,5 +1,6 @@
 import json
 import threading
+import quotes
 
 db_path = 'database.json'
 semaphore = threading.Semaphore()
@@ -28,11 +29,11 @@ def create_chat(chat_id):
 
 def add(chat_id, cost, date, description):
     chat_id = str(chat_id)
-    semaphore.acquire()
     try:
+        semaphore.acquire()
+
         if not contains(chat_id):
             create_chat(chat_id)
-
         with open(db_path) as db:
             database = json.load(db)
 
@@ -44,3 +45,30 @@ def add(chat_id, cost, date, description):
             json.dump(database, db)
     finally:
         semaphore.release()
+
+
+def find_records(chat_id):
+    chat_id = str(chat_id)
+    try:
+        semaphore.acquire()
+
+        all_records = ""
+        if not contains(chat_id):
+            all_records = quotes.empty_database
+            semaphore.release()
+            return quotes.empty_database
+        with open(db_path) as db:
+            database = json.load(db)
+
+        for record_id in database[chat_id]['records']:
+            record = database[chat_id]['records'][record_id]
+            all_records += '[' + record_id + '] '
+            all_records += record[0] + ' ед. '
+            all_records += record[1][:10] + ': "'
+            all_records += record[2] + '"\n'
+
+        if all_records == "":
+            all_records = quotes.empty_database
+    finally:
+        semaphore.release()
+    return all_records

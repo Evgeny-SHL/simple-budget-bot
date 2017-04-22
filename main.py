@@ -21,14 +21,29 @@ def handle_text(message):
 @bot.message_handler(commands=['add'])
 def handle_text(message):
     try:
-        arguments = parsing.get_arguments(message.text, last_is_string=True)
-        cost = int(arguments[0])
+        arguments = parsing.find_arguments(message.text, last_is_string=True)
+        cost = str(int(arguments[0]))
         date = str(datetime.strptime(arguments[1], '%d.%m.%y'))
         description = arguments[2]
         database.add(message.chat.id, cost, date, description)
         bot.send_message(message.chat.id, quotes.add_ok)
     except exceptions.WrongNumberOfArgumentsException as exception:
         bot.send_message(message.chat.id, exception.value)
+    except BaseException:
+        bot.send_message(message.chat.id, quotes.unexpected_error)
+
+
+# remove
+
+
+# change
+
+
+@bot.message_handler(commands=['show'])
+def handle_text(message):
+    try:
+        bot.send_message(message.chat.id,
+                         database.find_records(message.chat.id))
     except BaseException:
         bot.send_message(message.chat.id, quotes.unexpected_error)
 
