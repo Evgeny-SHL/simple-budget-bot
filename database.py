@@ -1,3 +1,6 @@
+from datetime import datetime
+from datetime import timedelta
+
 import exceptions
 import json
 import threading
@@ -102,7 +105,7 @@ def find_records(chat_id):
     records = []
     for record_id in database[chat_id]['records']:
         record = database[chat_id]['records'][record_id]
-        records.append([record_id, record[0], record[1][2:10], record[2]])
+        records.append([record_id, record[0], record[1], record[2]])
     records.sort(key=lambda x: x[2])
 
     all_records = ""
@@ -138,6 +141,57 @@ def clear_before_date(chat_id, date):
         json.dump(database, db)
 
     semaphore.release()
+
+
+def recently_outcome(chat_id, number, unit):
+    chat_id = str(chat_id)
+    semaphore.acquire()
+
+    if not contains(chat_id):
+        semaphore.release()
+        return quotes.no_outcome
+
+    last = datetime.today()
+    if unit == 'мес':
+        last = last.replace(day=1) - timedelta(days=1)
+    elif unit == 'нед':
+        last -= timedelta(days=1)
+        while last.weekday() != 6:
+            last -= timedelta(days=1)
+    else:
+        last -= timedelta(days=1)
+
+    first = last + timedelta(days=0)
+
+    if unit == 'мес':
+        first += timedelta(1)
+        new_year = first.year - number // 12
+        new_month = first.month
+        number %= 12
+        if number >= new_month:
+            new_year -= 1
+            new_month += 12
+        new_month -= number
+        first = first.replace(month=new_month, year=new_year)
+    elif unit == 'нед':
+        first -= timedelta(days=7 * number - 1)
+    else:
+        first -= timedelta(days=number - 1)
+
+    first = str(first)[2:10]
+    last = str(last)[2:10]
+
+    with open(db_path) as db:
+        database = json.load(db)
+
+    outcome = 0
+    for record_id in database[chat_id]['records']:
+        record = database[chat_id]['records'][record_id]
+        if first <= record[1] <= last:
+            outcome += int(record[0])
+
+    semaphore.release()
+    return quotes.say_recently.format(first, last, outcome)
 
 
 def find_total_outcome(chat_id):
