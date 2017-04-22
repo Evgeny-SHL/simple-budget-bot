@@ -33,10 +33,37 @@ def handle_text(message):
         bot.send_message(message.chat.id, quotes.unexpected_error)
 
 
-# remove
+@bot.message_handler(commands=['remove'])
+def handle_text(message):
+    try:
+        arguments = parsing.find_arguments(message.text)
+        record_id = str(int(arguments[0]))
+        database.remove(message.chat.id, record_id)
+        bot.send_message(message.chat.id, quotes.remove_ok)
+    except exceptions.WrongNumberOfArgumentsException as exception:
+        bot.send_message(message.chat.id, exception.value)
+    except exceptions.NoSuchRecordExcpetion as exception:
+        bot.send_message(message.chat.id, exception.value)
+    except BaseException:
+        bot.send_message(message.chat.id, quotes.unexpected_error)
 
 
-# change
+@bot.message_handler(commands=['change'])
+def handle_text(message):
+    try:
+        arguments = parsing.find_arguments(message.text)
+        record_id = str(int(arguments[0]))
+        cost = str(int(arguments[1]))
+        date = str(datetime.strptime(arguments[2], '%y-%m-%d'))
+        description = arguments[3]
+        database.change(message.chat.id, record_id, cost, date, description)
+        bot.send_message(message.chat.id, quotes.change_ok)
+    except exceptions.WrongNumberOfArgumentsException as exception:
+        bot.send_message(message.chat.id, exception.value)
+    except exceptions.NoSuchRecordExcpetion as exception:
+        bot.send_message(message.chat.id, exception.value)
+    except BaseException:
+        bot.send_message(message.chat.id, quotes.unexpected_error)
 
 
 @bot.message_handler(commands=['show'])
@@ -44,6 +71,15 @@ def handle_text(message):
     try:
         bot.send_message(message.chat.id,
                          database.find_records(message.chat.id))
+    except BaseException:
+        bot.send_message(message.chat.id, quotes.unexpected_error)
+
+
+@bot.message_handler(commands=['total'])
+def handle_text(message):
+    try:
+        bot.send_message(message.chat.id,
+                         database.find_total_outcome(message.chat.id))
     except BaseException:
         bot.send_message(message.chat.id, quotes.unexpected_error)
 
