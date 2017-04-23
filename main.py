@@ -1,7 +1,5 @@
 import telebot  # Основная библиотека для работы с Bot API
 
-from datetime import datetime
-
 import bot_token  # Файл с объявлением токена спрятан с помощью .gitignore
 import quotes  # Все фразы бота
 import parsing  # Функции для работы с текстом и хранилищем
@@ -22,14 +20,17 @@ def handle_text(message):
 def handle_text(message):
     try:
         arguments = parsing.find_arguments(message.text, last_is_string=True)
-        cost = str(int(arguments[0]))
-        date = str(datetime.strptime(arguments[1], '%y-%m-%d'))[2:10]
-        description = arguments[2]
+        cost = parsing.get_cost(arguments[0])
+        date = parsing.get_date(arguments[1])
+        description = parsing.get_description(arguments[2])
         database.add(message.chat.id, cost, date, description)
         bot.send_message(message.chat.id, quotes.add_ok)
     except exceptions.WrongNumberOfArgumentsException as exception:
         bot.send_message(message.chat.id, exception.value)
-    except BaseException:
+    except exceptions.InvalidArgumentFormatException as exception:
+        bot.send_message(message.chat.id, exception.value)
+    except BaseException as exception:
+        print(exception)
         bot.send_message(message.chat.id, quotes.unexpected_error)
 
 
@@ -37,37 +38,38 @@ def handle_text(message):
 def handle_text(message):
     try:
         arguments = parsing.find_arguments(message.text)
-        record_id = str(int(arguments[0]))
+        record_id = parsing.get_id(arguments[0])
         database.remove(message.chat.id, record_id)
         bot.send_message(message.chat.id, quotes.remove_ok)
     except exceptions.WrongNumberOfArgumentsException as exception:
         bot.send_message(message.chat.id, exception.value)
     except exceptions.NoSuchRecordExcpetion as exception:
         bot.send_message(message.chat.id, exception.value)
-    except BaseException:
+    except exceptions.InvalidArgumentFormatException as exception:
+        bot.send_message(message.chat.id, exception.value)
+    except BaseException as exception:
+        print(exception)
         bot.send_message(message.chat.id, quotes.unexpected_error)
 
 
 @bot.message_handler(commands=['change'])
 def handle_text(message):
     try:
-        arguments = parsing.find_arguments(message.text)
-        record_id = str(int(arguments[0]))
-        cost = str(int(arguments[1]))
-        try:
-            date = str(datetime.strptime(arguments[2], '%y-%m-%d'))[2:10]
-        except BaseException:
-            raise exceptions.InvalidDateException
-        description = arguments[3]
+        arguments = parsing.find_arguments(message.text, last_is_string=True)
+        record_id = parsing.get_id(arguments[0])
+        cost = parsing.get_cost(arguments[1])
+        date = parsing.get_date(arguments[2])
+        description = parsing.get_description(arguments[3])
         database.change(message.chat.id, record_id, cost, date, description)
         bot.send_message(message.chat.id, quotes.change_ok)
     except exceptions.WrongNumberOfArgumentsException as exception:
         bot.send_message(message.chat.id, exception.value)
     except exceptions.NoSuchRecordExcpetion as exception:
         bot.send_message(message.chat.id, exception.value)
-    except exceptions.InvalidDateException as exception:
+    except exceptions.InvalidArgumentFormatException as exception:
         bot.send_message(message.chat.id, exception.value)
-    except BaseException:
+    except BaseException as exception:
+        print(exception)
         bot.send_message(message.chat.id, quotes.unexpected_error)
 
 
@@ -76,7 +78,8 @@ def handle_text(message):
     try:
         bot.send_message(message.chat.id,
                          database.find_records(message.chat.id))
-    except BaseException:
+    except BaseException as exception:
+        print(exception)
         bot.send_message(message.chat.id, quotes.unexpected_error)
 
 
@@ -85,7 +88,8 @@ def handle_text(message):
     try:
         bot.send_message(message.chat.id,
                          database.find_total_outcome(message.chat.id))
-    except BaseException:
+    except BaseException as exception:
+        print(exception)
         bot.send_message(message.chat.id, quotes.unexpected_error)
 
 
@@ -93,20 +97,17 @@ def handle_text(message):
 def handle_text(message):
     try:
         arguments = parsing.find_arguments(message.text)
-        number = int(arguments[0])
-        if number <= 0:
-            raise BaseException
-        unit = str(arguments[1])
-        if unit not in ['дн', 'нед', 'мес']:
-            raise exceptions.InvalidUnitException
+        number = parsing.get_number(arguments[0])
+        unit = parsing.get_unit(arguments[1])
         bot.send_message(message.chat.id,
                          database.recently_outcome(message.chat.id, number,
                                                    unit))
     except exceptions.WrongNumberOfArgumentsException as exception:
         bot.send_message(message.chat.id, exception.value)
-    except exceptions.InvalidUnitException as exception:
+    except exceptions.InvalidArgumentFormatException as exception:
         bot.send_message(message.chat.id, exception.value)
-    except BaseException:
+    except BaseException as exception:
+        print(exception)
         bot.send_message(message.chat.id, quotes.unexpected_error)
 
 
@@ -114,17 +115,15 @@ def handle_text(message):
 def handle_text(message):
     try:
         arguments = parsing.find_arguments(message.text)
-        try:
-            date = str(datetime.strptime(arguments[0], '%y-%m-%d'))[2:10]
-        except BaseException:
-            raise exceptions.InvalidDateException
+        date = parsing.get_date(arguments[0])
         database.clear_before_date(message.chat.id, date)
         bot.send_message(message.chat.id, quotes.clear_ok)
     except exceptions.WrongNumberOfArgumentsException as exception:
         bot.send_message(message.chat.id, exception.value)
-    except exceptions.InvalidDateException as exception:
+    except exceptions.InvalidArgumentFormatException as exception:
         bot.send_message(message.chat.id, exception.value)
-    except BaseException:
+    except BaseException as exception:
+        print(exception)
         bot.send_message(message.chat.id, quotes.unexpected_error)
 
 
