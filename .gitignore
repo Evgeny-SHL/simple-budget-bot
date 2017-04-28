@@ -91,5 +91,8 @@ ENV/
 # Secret bot token
 bot_token.py
 
+# Database
+db.json
+
 # IDEA
 .idea
