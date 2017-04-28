@@ -92,8 +92,8 @@ def recently_outcome(chat_id, number, unit):
         if first == last:
             return quotes.say_last_day.format(first, outcome) if outcome != 0\
                 else quotes.no_last_day_outcome.format(first, last)
-        return quotes.say_recently.format(first, last, outcome) if outcome != 0\
-            else quotes.no_recent_outcome.format(first, last)
+        return quotes.say_recently.format(first, last, outcome) if\
+            outcome != 0 else quotes.no_recent_outcome.format(first, last)
 
 
 def find_total_outcome(chat_id):
