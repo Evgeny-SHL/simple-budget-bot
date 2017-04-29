@@ -1,25 +1,25 @@
 import quotes
 
 
-class WrongNumberOfArgumentsException(BaseException):
+class WrongNumberOfArgumentsException(TypeError):
     def __init__(self, expected, actual):
-        self.value = quotes.wrong_number_of_arguments.format(expected, actual)
+        self.value = quotes.WRONG_NUMBER_OF_ARGUMENTS.format(expected, actual)
 
     def __str__(self):
         return repr(self.value)
 
 
-class NoSuchRecordExcpetion(BaseException):
+class NoSuchRecordException(KeyError):
     def __init__(self, record_id):
-        self.value = quotes.no_such_record.format(record_id)
+        self.value = quotes.NO_SUCH_RECORD.format(record_id)
 
     def __str__(self):
         return repr(self.value)
 
 
-class InvalidArgumentFormatException(BaseException):
+class InvalidArgumentFormatException(TypeError):
     def __init__(self):
-        self.value = ''
+        self.value = quotes.WRONG_NUMBER_OF_ARGUMENTS_COMMON
 
     def __str__(self):
         return repr(self.value)
@@ -27,7 +27,7 @@ class InvalidArgumentFormatException(BaseException):
 
 class InvalidCostFormatException(InvalidArgumentFormatException):
     def __init__(self):
-        self.value = quotes.invalid_cost
+        self.value = quotes.INVALID_COST
 
     def __str__(self):
         return repr(self.value)
@@ -35,7 +35,7 @@ class InvalidCostFormatException(InvalidArgumentFormatException):
 
 class InvalidDateFormatException(InvalidArgumentFormatException):
     def __init__(self):
-        self.value = quotes.invalid_date
+        self.value = quotes.INVALID_DATE
 
     def __str__(self):
         return repr(self.value)
@@ -43,7 +43,7 @@ class InvalidDateFormatException(InvalidArgumentFormatException):
 
 class InvalidIdFormatException(InvalidArgumentFormatException):
     def __init__(self):
-        self.value = quotes.invalid_id
+        self.value = quotes.INVALID_ID
 
     def __str__(self):
         return repr(self.value)
@@ -51,7 +51,7 @@ class InvalidIdFormatException(InvalidArgumentFormatException):
 
 class InvalidNumberFormatException(InvalidArgumentFormatException):
     def __init__(self):
-        self.value = quotes.invalid_number
+        self.value = quotes.INVALID_NUMBER
 
     def __str__(self):
         return repr(self.value)
@@ -59,7 +59,7 @@ class InvalidNumberFormatException(InvalidArgumentFormatException):
 
 class InvalidUnitFormatException(InvalidArgumentFormatException):
     def __init__(self):
-        self.value = quotes.invalid_unit
+        self.value = quotes.INVALID_UNIT
 
     def __str__(self):
         return repr(self.value)
