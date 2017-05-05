@@ -94,5 +94,8 @@ bot_token.py
 # Database
 db.json
 
+# Logging
+logs.txt
+
 # IDEA
 .idea

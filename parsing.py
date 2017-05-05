@@ -2,7 +2,7 @@ import datetime
 
 import exceptions
 
-args_counts = {
+ARGS_COUNTS = {
     '/add': 3,
     '/remove': 1,
     '/change': 4,
@@ -16,12 +16,12 @@ def find_arguments(text, last_is_string=False):
     trimmed = list(map(lambda string: string.strip(), split))
     message = list(filter(lambda string: len(string) > 0, trimmed))
     command, arguments = message[0].split('@')[0], message[1:]
-    if last_is_string and len(arguments) >= args_counts[command]:
-        last_argument = ' '.join(arguments[args_counts[command] - 1:])
-        arguments[args_counts[command] - 1:] = [last_argument]
-    if len(arguments) != args_counts[command]:
+    if last_is_string and len(arguments) >= ARGS_COUNTS[command]:
+        last_argument = ' '.join(arguments[ARGS_COUNTS[command] - 1:])
+        arguments[ARGS_COUNTS[command] - 1:] = [last_argument]
+    if len(arguments) != ARGS_COUNTS[command]:
         raise exceptions.WrongNumberOfArgumentsException(
-            args_counts[command], len(arguments))
+            ARGS_COUNTS[command], len(arguments))
     return arguments
 
 

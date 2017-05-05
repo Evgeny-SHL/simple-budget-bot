@@ -8,8 +8,11 @@ import parsing  # Функции для работы с текстом и хра
 import database  # Функции для работы с базой данных
 import exceptions  # Различные виды исключений
 
-logging.basicConfig(level=logging.WARNING)
-
+LOG_FILE = 'logs.txt'
+logging.basicConfig(format='%(asctime)s %(filename)s:%(lineno)-3d' +
+                    ' %(levelname)-8s %(message)s', level=logging.INFO,
+                    filename=LOG_FILE)
+logging._defaultFormatter = logging.Formatter(u'%(message)s')
 
 bot = telebot.TeleBot(bot_token.token)
 print(bot.get_me())
@@ -33,11 +36,14 @@ def handle_text(message):
         bot.send_message(message.chat.id, exception.value)
     except exceptions.InvalidArgumentFormatException as exception:
         bot.send_message(message.chat.id, exception.value)
-    except OSError:
-        bot.send_message(message.chat.id, quotes.BACKUP_ERROR)
+    except OSError as exception:
+        logging.critical(exception)
+        bot.send_message(message.chat.id, quotes.BACKEND_ERROR)
+        raise
     except Exception as exception:
-        print(exception)
+        logging.error(exception)
         bot.send_message(message.chat.id, quotes.UNEXPECTED_ERROR)
+        raise
 
 
 @bot.message_handler(commands=['remove'])
@@ -53,11 +59,14 @@ def handle_text(message):
         bot.send_message(message.chat.id, exception.value)
     except exceptions.InvalidArgumentFormatException as exception:
         bot.send_message(message.chat.id, exception.value)
-    except OSError:
-        bot.send_message(message.chat.id, quotes.BACKUP_ERROR)
+    except OSError as exception:
+        logging.critical(exception)
+        bot.send_message(message.chat.id, quotes.BACKEND_ERROR)
+        raise
     except Exception as exception:
-        print(exception)
+        logging.error(exception)
         bot.send_message(message.chat.id, quotes.UNEXPECTED_ERROR)
+        raise
 
 
 @bot.message_handler(commands=['change'])
@@ -76,11 +85,14 @@ def handle_text(message):
         bot.send_message(message.chat.id, exception.value)
     except exceptions.InvalidArgumentFormatException as exception:
         bot.send_message(message.chat.id, exception.value)
-    except OSError:
-        bot.send_message(message.chat.id, quotes.BACKUP_ERROR)
+    except OSError as exception:
+        logging.critical(exception)
+        bot.send_message(message.chat.id, quotes.BACKEND_ERROR)
+        raise
     except Exception as exception:
-        print(exception)
+        logging.error(exception)
         bot.send_message(message.chat.id, quotes.UNEXPECTED_ERROR)
+        raise
 
 
 @bot.message_handler(commands=['show'])
@@ -88,11 +100,14 @@ def handle_text(message):
     try:
         bot.send_message(message.chat.id,
                          database.find_records(message.chat.id))
-    except OSError:
-        bot.send_message(message.chat.id, quotes.BACKUP_ERROR)
+    except OSError as exception:
+        logging.critical(exception)
+        bot.send_message(message.chat.id, quotes.BACKEND_ERROR)
+        raise
     except Exception as exception:
-        print(exception)
+        logging.error(exception)
         bot.send_message(message.chat.id, quotes.UNEXPECTED_ERROR)
+        raise
 
 
 @bot.message_handler(commands=['total'])
@@ -100,11 +115,14 @@ def handle_text(message):
     try:
         bot.send_message(message.chat.id,
                          database.find_total_outcome(message.chat.id))
-    except OSError:
-        bot.send_message(message.chat.id, quotes.BACKUP_ERROR)
+    except OSError as exception:
+        logging.critical(exception)
+        bot.send_message(message.chat.id, quotes.BACKEND_ERROR)
+        raise
     except Exception as exception:
-        print(exception)
+        logging.error(exception)
         bot.send_message(message.chat.id, quotes.UNEXPECTED_ERROR)
+        raise
 
 
 @bot.message_handler(commands=['last'])
@@ -120,11 +138,14 @@ def handle_text(message):
         bot.send_message(message.chat.id, exception.value)
     except exceptions.InvalidArgumentFormatException as exception:
         bot.send_message(message.chat.id, exception.value)
-    except OSError:
-        bot.send_message(message.chat.id, quotes.BACKUP_ERROR)
+    except OSError as exception:
+        logging.critical(exception)
+        bot.send_message(message.chat.id, quotes.BACKEND_ERROR)
+        raise
     except Exception as exception:
-        print(exception)
+        logging.error(exception)
         bot.send_message(message.chat.id, quotes.UNEXPECTED_ERROR)
+        raise
 
 
 @bot.message_handler(commands=['clear'])
@@ -138,11 +159,28 @@ def handle_text(message):
         bot.send_message(message.chat.id, exception.value)
     except exceptions.InvalidArgumentFormatException as exception:
         bot.send_message(message.chat.id, exception.value)
-    except OSError:
-        bot.send_message(message.chat.id, quotes.BACKUP_ERROR)
+        logging.critical(exception)
+        bot.send_message(message.chat.id, quotes.BACKEND_ERROR)
+        raise
+    except OSError as exception:
+        logging.critical(exception)
+        bot.send_message(message.chat.id, quotes.BACKEND_ERROR)
+        raise
     except Exception as exception:
-        print(exception)
+        logging.error(exception)
         bot.send_message(message.chat.id, quotes.UNEXPECTED_ERROR)
+        raise
 
 
-bot.polling(none_stop=True, interval=0)
+try:
+    bot.polling(none_stop=True, interval=0)
+except GeneratorExit as exception:
+    logging.info('GeneratorExit: {}'.format(exception))
+except SystemExit as exception:
+    logging.info('SystemExit: {}'.format(exception))
+except KeyboardInterrupt as exception:
+    logging.info('KeyboardInterrupt: {}'.format(exception))
+except OSError:
+    pass
+except Exception:
+    pass

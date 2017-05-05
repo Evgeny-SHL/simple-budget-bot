@@ -5,7 +5,7 @@ import exceptions
 import parsing
 import quotes
 
-db_path = 'db.json'
+DB_PATH = 'db.json'
 semaphore = threading.Semaphore()
 
 
@@ -14,12 +14,12 @@ def add(chat_id, cost, date, description):
         chat_id = str(chat_id)
         if not contains(chat_id):
             create_chat(chat_id)
-        with open(db_path) as db:
+        with open(DB_PATH) as db:
             database = json.load(db)
 
         add_record(database, chat_id, [cost, date, description])
 
-        with open(db_path, 'w') as db:
+        with open(DB_PATH, 'w') as db:
             json.dump(database, db)
 
 
@@ -28,12 +28,12 @@ def remove(chat_id, record_id):
         chat_id = str(chat_id)
         if not contains(chat_id):
             raise exceptions.NoSuchRecordException(record_id)
-        with open(db_path) as db:
+        with open(DB_PATH) as db:
             database = json.load(db)
 
         remove_record(database, chat_id, record_id)
 
-        with open(db_path, 'w') as db:
+        with open(DB_PATH, 'w') as db:
             json.dump(database, db)
 
 
@@ -42,12 +42,12 @@ def change(chat_id, record_id, cost, date, description):
         chat_id = str(chat_id)
         if not contains(chat_id):
             raise exceptions.NoSuchRecordException(record_id)
-        with open(db_path) as db:
+        with open(DB_PATH) as db:
             database = json.load(db)
 
         change_record(database, chat_id, record_id, [cost, date, description])
 
-        with open(db_path, 'w') as db:
+        with open(DB_PATH, 'w') as db:
             json.dump(database, db)
 
 
@@ -56,7 +56,7 @@ def find_records(chat_id):
         chat_id = str(chat_id)
         if not contains(chat_id):
             return quotes.EMPTY_DATABASE
-        with open(db_path) as db:
+        with open(DB_PATH) as db:
             database = json.load(db)
 
         all_records = find_all_records(database, chat_id)
@@ -68,12 +68,12 @@ def clear_before_date(chat_id, date):
         chat_id = str(chat_id)
         if not contains(chat_id):
             return
-        with open(db_path) as db:
+        with open(DB_PATH) as db:
             database = json.load(db)
 
         clear_old_records(database, chat_id, date)
 
-        with open(db_path, 'w') as db:
+        with open(DB_PATH, 'w') as db:
             json.dump(database, db)
 
 
@@ -83,7 +83,7 @@ def recently_outcome(chat_id, number, unit):
         if not contains(chat_id):
             return quotes.NO_OUTCOME
 
-        with open(db_path) as db:
+        with open(DB_PATH) as db:
             database = json.load(db)
 
         last = parsing.find_last_day(unit)
@@ -101,7 +101,7 @@ def find_total_outcome(chat_id):
         chat_id = str(chat_id)
         if not contains(chat_id):
             return quotes.NO_OUTCOME
-        with open(db_path) as db:
+        with open(DB_PATH) as db:
             database = json.load(db)
 
         outcome = sum_outcome(database, chat_id)
@@ -110,18 +110,18 @@ def find_total_outcome(chat_id):
 
 
 def contains(chat_id):
-    with open(db_path) as db:
+    with open(DB_PATH) as db:
         database = json.load(db)
     return chat_id in database
 
 
 def create_chat(chat_id):
-    with open(db_path) as db:
+    with open(DB_PATH) as db:
         database = json.load(db)
 
     add_chat(database, chat_id)
 
-    with open(db_path, 'w') as db:
+    with open(DB_PATH, 'w') as db:
         json.dump(database, db)
 
 
