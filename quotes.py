@@ -11,7 +11,7 @@ HELP_TEXT = 'Я могу помочь тебе контролировать ра
     '/help - показать справку.\n'\
     '\n'\
     'Более подробная документация на [GitHub]'\
-    '(https://github.com/Evgeny-SHL/simple-budget-bot).'
+    '(https://github.com/eshlykov/simple-budget-bot).'
 
 WRONG_NUMBER_OF_ARGUMENTS = 'Неверное число аргументов: '\
     'ожидалось {}, принято {}.'
